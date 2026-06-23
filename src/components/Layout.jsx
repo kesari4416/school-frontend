@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   House, Users, ChartBar, ClipboardText, GraduationCap,
   CalendarBlank, Bell, ChartLineUp, SignOut, IdentificationCard,
-  Student, ChalkboardTeacher
+  Student, ChalkboardTeacher, UserGear
 } from "@phosphor-icons/react";
 import { useState } from "react";
 
@@ -19,7 +19,7 @@ const ROLE_LABEL = {
 function navItemsFor(role) {
   const common = [{ to: "/dashboard", label: "Dashboard", icon: House, tid: "nav-dashboard" }];
   if (role === "admin" || role === "office_staff") {
-    return [
+    const items = [
       ...common,
       { to: "/students", label: "Students", icon: Users, tid: "nav-students" },
       { to: "/attendance", label: "Attendance", icon: ClipboardText, tid: "nav-attendance" },
@@ -28,6 +28,10 @@ function navItemsFor(role) {
       { to: "/reports", label: "Reports", icon: ChartBar, tid: "nav-reports" },
       { to: "/notifications", label: "Notifications", icon: Bell, tid: "nav-notifications" },
     ];
+    if (role === "admin") {
+      items.push({ to: "/users", label: "User Management", icon: UserGear, tid: "nav-users" });
+    }
+    return items;
   }
   if (role === "class_teacher" || role === "subject_teacher") {
     return [

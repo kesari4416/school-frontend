@@ -5,13 +5,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, Eye, EyeSlash } from "@phosphor-icons/react";
 
-const SAMPLE_ACCOUNTS = [
-  { role: "Principal / Admin", email: "admin@icsc.edu", password: "admin123" },
-  { role: "Class Teacher", email: "rajiv.mehta@icsc.edu", password: "teacher123" },
-  { role: "Parent", email: "parent.diya.iyer0@example.com", password: "parent123" },
-  { role: "Office Staff", email: "office@icsc.edu", password: "office123" },
-];
-
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -36,8 +29,6 @@ export default function Login() {
       setLoading(false);
     }
   };
-
-  const fill = (acc) => { setEmail(acc.email); setPassword(acc.password); };
 
   return (
     <div className="min-h-screen grid grid-cols-1 lg:grid-cols-5 bg-[#F7F7F5]">
@@ -142,26 +133,9 @@ export default function Login() {
             </Button>
           </form>
 
-          <div className="mt-10">
-            <p className="tiny-label mb-3">Demo accounts</p>
-            <div className="space-y-2">
-              {SAMPLE_ACCOUNTS.map((acc) => (
-                <button
-                  key={acc.email}
-                  type="button"
-                  onClick={() => fill(acc)}
-                  data-testid={`demo-account-${acc.role.replace(/\s/g, "-").toLowerCase()}`}
-                  className="w-full text-left px-3 py-2.5 rounded-lg border border-[#E2E8F0] hover:border-[#1A4331] hover:bg-white transition-colors flex justify-between items-center"
-                >
-                  <div>
-                    <div className="text-sm font-medium">{acc.role}</div>
-                    <div className="text-xs text-[#64748B]">{acc.email}</div>
-                  </div>
-                  <span className="text-xs accent-text">Use →</span>
-                </button>
-              ))}
-            </div>
-          </div>
+          <p className="mt-8 text-xs text-[#64748B] text-center">
+            Need access? Please contact your school administrator.
+          </p>
         </div>
       </div>
     </div>
