@@ -19,6 +19,7 @@ import MyExams from "@/pages/MyExams";
 import AdmitCard from "@/pages/AdmitCard";
 import AdmitCards from "@/pages/AdmitCards";
 import Users from "@/pages/Users";
+import AcademicSetup from "@/pages/AcademicSetup";
 
 const STAFF = ["admin", "class_teacher", "subject_teacher", "office_staff"];
 const VIEWER = ["parent", "student"];
@@ -55,6 +56,7 @@ function AppRoutes() {
 
       <Route path="/students" element={<RoleRoute roles={STAFF}><Students /></RoleRoute>} />
       <Route path="/users" element={<RoleRoute roles={["admin"]}><Users /></RoleRoute>} />
+      <Route path="/academic-setup" element={<RoleRoute roles={["admin"]}><AcademicSetup /></RoleRoute>} />
       <Route path="/attendance" element={<RoleRoute roles={STAFF}><Attendance /></RoleRoute>} />
       <Route path="/marks" element={<RoleRoute roles={STAFF}><Marks /></RoleRoute>} />
       <Route path="/report-card/:studentId/:examId" element={<Authed><ReportCard /></Authed>} />

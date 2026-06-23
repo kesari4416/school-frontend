@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   House, Users, ChartBar, ClipboardText, GraduationCap,
   CalendarBlank, Bell, ChartLineUp, SignOut, IdentificationCard,
-  Student, ChalkboardTeacher, UserGear
+  Student, ChalkboardTeacher, UserGear, Stack
 } from "@phosphor-icons/react";
 import { useState } from "react";
 
@@ -29,6 +29,7 @@ function navItemsFor(role) {
       { to: "/notifications", label: "Notifications", icon: Bell, tid: "nav-notifications" },
     ];
     if (role === "admin") {
+      items.push({ to: "/academic-setup", label: "Academic Setup", icon: Stack, tid: "nav-academic-setup" });
       items.push({ to: "/users", label: "User Management", icon: UserGear, tid: "nav-users" });
     }
     return items;

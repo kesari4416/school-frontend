@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, MagnifyingGlass, UserPlus } from "@phosphor-icons/react";
+import { Plus, MagnifyingGlass, UserPlus, Key } from "@phosphor-icons/react";
 import { toast } from "sonner";
 
 const ROLE_OPTIONS = [
@@ -47,6 +47,9 @@ export default function Users() {
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState(BLANK_FORM);
   const [saving, setSaving] = useState(false);
+  const [resetUser, setResetUser] = useState(null);
+  const [newPwd, setNewPwd] = useState("");
+  const [resetting, setResetting] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -125,6 +128,46 @@ export default function Users() {
         ? f.subject_ids.filter((x) => x !== sid)
         : [...f.subject_ids, sid],
     }));
+  };
+
+  const randomPassword = () => {
+    const a = "ABCDEFGHJKMNPQRSTUVWXYZ";
+    const b = "abcdefghjkmnpqrstuvwxyz";
+    const c = "23456789";
+    const all = a + b + c;
+    let s = a[Math.floor(Math.random() * a.length)]
+          + b[Math.floor(Math.random() * b.length)]
+          + c[Math.floor(Math.random() * c.length)];
+    while (s.length < 10) s += all[Math.floor(Math.random() * all.length)];
+    return s;
+  };
+
+  const doReset = async () => {
+    if (!resetUser || !newPwd || newPwd.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    setResetting(true);
+    try {
+      await api.post(`/users/${resetUser.id}/reset-password`, { new_password: newPwd });
+      toast.success(`Password reset for ${resetUser.email}`);
+      setResetUser(null);
+      setNewPwd("");
+    } catch (e) {
+      const detail = e.response?.data?.detail || "Reset failed";
+      toast.error(typeof detail === "string" ? detail : "Reset failed");
+    } finally {
+      setResetting(false);
+    }
+  };
+
+  const copyPwd = async () => {
+    try {
+      await navigator.clipboard.writeText(newPwd);
+      toast.success("Password copied to clipboard");
+    } catch {
+      toast.error("Couldn't copy. Please copy manually.");
+    }
   };
 
   return (
@@ -282,12 +325,13 @@ export default function Users() {
                   <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Phone</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {loading && <TableRow><TableCell colSpan={4} className="text-center text-[#64748B] py-8">Loading…</TableCell></TableRow>}
+                {loading && <TableRow><TableCell colSpan={5} className="text-center text-[#64748B] py-8">Loading…</TableCell></TableRow>}
                 {!loading && filtered.length === 0 && (
-                  <TableRow><TableCell colSpan={4} className="text-center text-[#64748B] py-8">No users found.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={5} className="text-center text-[#64748B] py-8">No users found.</TableCell></TableRow>
                 )}
                 {filtered.map((u) => (
                   <TableRow key={u.id} data-testid={`user-row-${u.email}`}>
@@ -295,6 +339,15 @@ export default function Users() {
                     <TableCell className="text-sm">{u.email}</TableCell>
                     <TableCell><Badge variant="outline">{ROLE_LABEL[u.role] || u.role}</Badge></TableCell>
                     <TableCell className="text-sm text-[#64748B]">{u.phone || "—"}</TableCell>
+                    <TableCell className="text-right">
+                      <button
+                        onClick={() => { setResetUser(u); setNewPwd(randomPassword()); }}
+                        data-testid={`reset-pwd-${u.email}`}
+                        className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md border border-[#E2E8F0] text-[#1A4331] hover:bg-[#F7F7F5]"
+                      >
+                        <Key size={13} /> Reset password
+                      </button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -302,6 +355,60 @@ export default function Users() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={!!resetUser} onOpenChange={(v) => { if (!v) { setResetUser(null); setNewPwd(""); } }}>
+        <DialogContent data-testid="reset-pwd-dialog">
+          <DialogHeader>
+            <DialogTitle>Reset password</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 text-sm">
+            <p className="text-[#64748B]">
+              Resetting password for <strong className="text-[#1A4331]">{resetUser?.name}</strong>
+              <br /><span className="text-xs">{resetUser?.email}</span>
+            </p>
+            <div>
+              <label className="text-sm font-medium">New password</label>
+              <div className="flex gap-2 mt-1">
+                <Input
+                  value={newPwd}
+                  onChange={(e) => setNewPwd(e.target.value)}
+                  data-testid="reset-new-password-input"
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setNewPwd(randomPassword())}
+                  data-testid="generate-password-btn"
+                >
+                  Generate
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={copyPwd}
+                  data-testid="copy-password-btn"
+                >
+                  Copy
+                </Button>
+              </div>
+              <p className="text-xs text-[#64748B] mt-1">
+                Minimum 6 characters. Share this password with the user securely; ask them to change it after first login.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              onClick={doReset}
+              disabled={resetting || !newPwd}
+              className="bg-[#1A4331] hover:bg-[#133124] text-white"
+              data-testid="confirm-reset-pwd-btn"
+            >
+              {resetting ? "Resetting…" : "Reset password"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
