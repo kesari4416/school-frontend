@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Manrope:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+    margin: 0;
+    background: #F7F7F5;
+    font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #1E293B;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.01em;
+}
+
+@layer base {
+    :root {
+        --background: 60 11% 97%;
+        --foreground: 215 25% 16%;
+        --card: 0 0% 100%;
+        --card-foreground: 215 25% 16%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 215 25% 16%;
+        --primary: 152 47% 18%;
+        --primary-foreground: 0 0% 98%;
+        --secondary: 30 47% 64%;
+        --secondary-foreground: 215 25% 16%;
+        --muted: 210 16% 95%;
+        --muted-foreground: 215 14% 45%;
+        --accent: 30 47% 64%;
+        --accent-foreground: 215 25% 16%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 98%;
+        --border: 214 20% 89%;
+        --input: 214 20% 89%;
+        --ring: 152 47% 18%;
+        --chart-1: 152 47% 28%;
+        --chart-2: 30 47% 64%;
+        --chart-3: 38 92% 50%;
+        --chart-4: 0 84% 60%;
+        --chart-5: 217 91% 60%;
+        --radius: 0.625rem;
+    }
+}
+
+@layer base {
+    * { @apply border-border; }
+    body { @apply bg-background text-foreground; }
+}
+
+/* Custom utilities */
+.brand-bg { background-color: #1A4331; }
+.brand-text { color: #1A4331; }
+.brand-border { border-color: #1A4331; }
+.brand-hover:hover { background-color: #133124; }
+.section-bg { background-color: #F7F7F5; }
+.surface { background-color: #FFFFFF; }
+.subtle-border { border: 1px solid #E2E8F0; }
+.accent-text { color: #D4A373; }
+.tiny-label {
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #64748B;
+}
+
+/* Sidebar/dashboard transitions */
+.card-soft {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.75rem;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.card-soft:hover { box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06); }
+
+/* Print styles for report card / admit card */
+@media print {
+    .no-print { display: none !important; }
+    body { background: #fff !important; }
+    .print-page { padding: 0; }
+}
+
+[data-debug-wrapper="true"] { display: contents !important; }
